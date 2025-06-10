@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"regexp"
 	"strings"
 	"syscall"
 
@@ -17,55 +16,8 @@ import (
 
 const URLRegex = `https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
-func makeUrlFixer(db *bolt.DB) func(s *discordgo.Session, m *discordgo.MessageCreate) {
-	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		// Skip messages we sent ourselves.
-		if m.Author.ID == s.State.User.ID {
-			return
-		}
-
-		// Skip messages without URLs.
-		re := regexp.MustCompile(URLRegex)
-		urlMatch := re.Find([]byte(m.Content))
-		if len(urlMatch) == 0 {
-			return
-		}
-
-		err := db.View(func(tx *bolt.Tx) error {
-			b := tx.Bucket([]byte(m.GuildID))
-			if b == nil {
-				return fmt.Errorf("bucket %v does not exist", m.GuildID)
-			}
-
-			fixedUrl := ""
-			b.ForEach(func(reStr, replaceWith []byte) error {
-				re := regexp.MustCompile(string(reStr))
-				if !re.Match(urlMatch) {
-					return nil
-				}
-				fixedUrl = string(re.ReplaceAll(urlMatch, replaceWith))
-
-				return nil
-			})
-
-			_, err := s.ChannelMessageSendReply(m.ChannelID, fixedUrl, m.Reference())
-			if err != nil {
-				fmt.Printf("error responding: %v\n", err)
-				return err
-			}
-			return nil
-		})
-		if err != nil {
-			log.Printf("error fixing URL in message: %v", err)
-		}
-	}
-}
-
 func makeRegisterFixer(db *bolt.DB) func(s *discordgo.Session, m *discordgo.InteractionCreate) {
 	return func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		if i.ApplicationCommandData().Name != "register-fixer" {
-			return
-		}
 
 		matcher := ""
 		replaceWith := ""
@@ -142,7 +94,7 @@ func makeListFixers(db *bolt.DB) func(s *discordgo.Session, m *discordgo.Interac
 		responseBuilder := strings.Builder{}
 		responseBuilder.WriteString("Currently registered fixers:\n")
 		for k, v := range fixers {
-			responseBuilder.WriteString(fmt.Sprintf("- `%v`: `%v`\n", k, v))
+			responseBuilder.WriteString(fmt.Sprintf("- `%v` to `%v`\n", k, v))
 		}
 
 		err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -191,39 +143,6 @@ func main() {
 		}
 
 	})
-
-	// In this example, we only care about receiving message events.
-	discord.Identify.Intents = discordgo.IntentsGuildMessages
-
-	// Open a websocket connection to Discord and begin listening.
-	err = discord.Open()
-	if err != nil {
-		fmt.Printf("error opening connection: %v\n", err)
-		return
-	}
-
-	_, err = discord.ApplicationCommandCreate(discord.State.Application.ID, "", &discordgo.ApplicationCommand{
-		Name:        "register-fixer",
-		Description: "Register a URL fixer",
-		Options: []*discordgo.ApplicationCommandOption{
-			{
-				Name:        "matcher",
-				Description: "regex to match against URLs",
-				Type:        discordgo.ApplicationCommandOptionString,
-				Required:    true,
-			},
-			{
-				Name:        "replace-with",
-				Description: "replace URLs with this",
-				Type:        discordgo.ApplicationCommandOptionString,
-				Required:    true,
-			},
-		},
-	})
-	if err != nil {
-		log.Printf("error creating command: %v", err)
-		return
-	}
 
 	_, err = discord.ApplicationCommandCreate(discord.State.Application.ID, "", &discordgo.ApplicationCommand{
 		Name:        "list-fixers",

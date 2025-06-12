@@ -4,77 +4,73 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"sync"
 
+	"github.com/charmbracelet/log"
 	bolt "go.etcd.io/bbolt"
 )
 
 type Store interface {
-	Put(string, Fixer) error
-	Get(string) (Fixer, error)
-	Delete(string) error
+	Put(guildID string, domain string, f Fixer) error
+	Get(guildID string, domain string) (Fixer, error)
+	Delete(guildID string, domain string) error
+	List(guildID string) (map[string]Fixer, error)
+}
+
+type FixerList []struct {
+	Domain string
+	Fixer  Fixer
 }
 
 type BoltStore struct {
-	db     *bolt.DB
-	bucket []byte
-
-	mu      sync.Mutex
-	buf     bytes.Buffer
-	encoder gob.Encoder
-	decoder gob.Decoder
+	db *bolt.DB
 }
 
-func NewBoltStore(db *bolt.DB, bucket []byte) (*BoltStore, error) {
-	err := db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists(bucket)
-		return err
-	})
-	if err != nil {
-		return nil, fmt.Errorf("could not ensure bucket %v exists: %v", string(bucket), err)
-	}
-
-	buf := bytes.Buffer{}
+func NewBoltStore(db *bolt.DB) *BoltStore {
 	return &BoltStore{
-		db:      db,
-		bucket:  bucket,
-		encoder: *gob.NewEncoder(&buf),
-		decoder: *gob.NewDecoder(&buf),
-	}, nil
+		db: db,
+	}
 }
 
 func (bs *BoltStore) encodeFixer(f Fixer) ([]byte, error) {
-	bs.mu.Lock()
-	defer bs.mu.Unlock()
-
-	bs.buf.Reset()
-	err := bs.encoder.Encode(&f)
+	b := bytes.Buffer{}
+	err := gob.NewEncoder(&b).Encode(&f)
 	if err != nil {
+		log.Error("could not encode fixer", "fixer", f, "err", err)
 		return nil, err
 	}
 
-	return bs.buf.Bytes(), nil
+	log.Debug("encoded fixer", "encoded", b.Bytes())
+
+	return b.Bytes(), nil
 }
 
 func (bs *BoltStore) decodeFixer(b []byte) (Fixer, error) {
-	bs.mu.Lock()
-	defer bs.mu.Unlock()
-
-	bs.buf.Reset()
 	var f Fixer
-	err := bs.decoder.Decode(&f)
+	err := gob.NewDecoder(bytes.NewBuffer(b)).Decode(&f)
 	if err != nil {
+		log.Error("could not decode fixer", "err", err)
 		return nil, err
 	}
 
 	return f, nil
 }
 
-func (bs *BoltStore) Put(domain string, f Fixer) error {
+func (bs *BoltStore) Delete(guildID string, domain string) error {
 	return bs.db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bs.bucket)
+		b := tx.Bucket([]byte(guildID))
 		if b == nil {
-			return fmt.Errorf("could not find bucket %v", bs.bucket)
+			return fmt.Errorf("could not find bucket %v", guildID)
+		}
+
+		return b.Delete([]byte(domain))
+	})
+}
+
+func (bs *BoltStore) Put(guildID string, domain string, f Fixer) error {
+	return bs.db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(guildID))
+		if err != nil {
+			return err
 		}
 
 		fEncoded, err := bs.encodeFixer(f)
@@ -82,16 +78,22 @@ func (bs *BoltStore) Put(domain string, f Fixer) error {
 			return err
 		}
 
-		return b.Put([]byte(domain), fEncoded)
+		err = b.Put([]byte(domain), fEncoded)
+		if err != nil {
+			return err
+		}
+
+		log.Info("created fixer", "guildID", guildID, "domain", domain, "fixer", f)
+		return nil
 	})
 }
 
-func (bs *BoltStore) Get(domain string) (Fixer, error) {
+func (bs *BoltStore) Get(guildID string, domain string) (Fixer, error) {
 	var res Fixer
 	err := bs.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bs.bucket)
+		b := tx.Bucket([]byte(guildID))
 		if b == nil {
-			return fmt.Errorf("could not find bucket %v", bs.bucket)
+			return fmt.Errorf("could not find bucket %v", guildID)
 		}
 
 		fEncoded := b.Get([]byte(domain))
@@ -105,6 +107,31 @@ func (bs *BoltStore) Get(domain string) (Fixer, error) {
 
 		res = f
 		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (bs *BoltStore) List(guildID string) (map[string]Fixer, error) {
+	res := map[string]Fixer{}
+	err := bs.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(guildID))
+		if b == nil {
+			return fmt.Errorf("could not find bucket %v", guildID)
+		}
+
+		return b.ForEach(func(domain, fEncoded []byte) error {
+			f, err := bs.decodeFixer(fEncoded)
+			if err != nil {
+				return err
+			}
+
+			res[string(domain)] = f
+			return nil
+		})
 	})
 	if err != nil {
 		return nil, err

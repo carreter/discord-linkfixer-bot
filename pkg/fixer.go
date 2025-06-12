@@ -2,6 +2,7 @@ package linkfixerbot
 
 import (
 	"encoding/gob"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -11,10 +12,11 @@ import (
 func init() {
 	gob.Register(ReplaceFixer{})
 	gob.Register(ReplaceRegexFixer{})
-	gob.Register(PrependerFixer{})
+	gob.Register(PrependFixer{})
 }
 
 type Fixer interface {
+	String() string
 	Fix(string) string
 }
 
@@ -25,6 +27,10 @@ type ReplaceFixer struct {
 
 func (f ReplaceFixer) Fix(link string) string {
 	return strings.ReplaceAll(link, f.Old, f.New)
+}
+
+func (f ReplaceFixer) String() string {
+	return fmt.Sprintf("replace '%v' with '%v'", f.Old, f.New)
 }
 
 type ReplaceRegexFixer struct {
@@ -41,10 +47,18 @@ func (f ReplaceRegexFixer) Fix(link string) string {
 	return re.ReplaceAllString(link, f.Replacement)
 }
 
-type PrependerFixer struct {
+func (f ReplaceRegexFixer) String() string {
+	return fmt.Sprintf("regex replace '%v' with '%v'", f.Pattern, f.Replacement)
+}
+
+type PrependFixer struct {
 	Prefix string
 }
 
-func (f PrependerFixer) Fix(link string) string {
+func (f PrependFixer) String() string {
+	return fmt.Sprintf("prepend '%v'", f.Prefix)
+}
+
+func (f PrependFixer) Fix(link string) string {
 	return f.Prefix + link
 }

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="85.548912mm"
+   height="85.548912mm"
+   viewBox="0 0 85.548912 85.548912"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   sodipodi:docname="pfp.svg"
+   inkscape:export-filename="pfp.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.3113356"
+     inkscape:cx="164.71756"
+     inkscape:cy="83.502653"
+     inkscape:window-width="2380"
+     inkscape:window-height="1290"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Blur"
+       id="filter3"
+       x="-0.036459218"
+       y="-0.14944678"
+       width="1.0729184"
+       height="1.2988936">
+      <feGaussianBlur
+         stdDeviation="0.9 0.9"
+         result="blur"
+         id="feGaussianBlur3" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-20.432724,-6.1277065)">
+    <rect
+       style="fill:#000000;stroke:none;stroke-width:4.95099;paint-order:stroke fill markers"
+       id="rect1"
+       width="85.548912"
+       height="85.548912"
+       x="20.432724"
+       y="6.1277065" />
+    <g
+       id="g3">
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-variant:normal;font-weight:800;font-stretch:normal;font-size:14.3102px;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono Ultra-Bold Italic';text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#ffffff;stroke:#ffffff;stroke-width:3.78772;paint-order:stroke fill markers;filter:url(#filter3)"
+         x="63.321667"
+         y="53.552975"
+         id="text1"><tspan
+           sodipodi:role="line"
+           id="tspan1"
+           style="font-style:italic;font-variant:normal;font-weight:800;font-stretch:normal;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono Ultra-Bold Italic';fill:#00fd3c;stroke:none;stroke-width:3.78772"
+           x="63.321667"
+           y="53.552975">http://</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-variant:normal;font-weight:800;font-stretch:normal;font-size:14.3102px;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono Ultra-Bold Italic';text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#ffffff;stroke:#ffffff;stroke-width:3.78772;paint-order:stroke fill markers"
+         x="63.321667"
+         y="53.552975"
+         id="text1-6"><tspan
+           sodipodi:role="line"
+           id="tspan1-1"
+           style="font-style:italic;font-variant:normal;font-weight:800;font-stretch:normal;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono Ultra-Bold Italic';fill:#00fd3c;stroke:none;stroke-width:3.78772"
+           x="63.321667"
+           y="53.552975">http://</tspan></text>
+    </g>
+  </g>
+</svg>

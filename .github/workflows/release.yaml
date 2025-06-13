@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   releases-matrix:
-    name: Release cmd/osrm-files-extractor
+    name: Release linkfixer-bot
     runs-on: ubuntu-latest
     strategy:
       matrix:

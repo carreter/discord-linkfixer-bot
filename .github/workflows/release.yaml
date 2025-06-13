@@ -1,0 +1,29 @@
+# .github/workflows/release.yaml
+
+on:
+  release:
+    types: [created]
+
+permissions:
+    contents: write
+    packages: write
+
+jobs:
+  releases-matrix:
+    name: Release cmd/osrm-files-extractor
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Environment Printer
+      uses: managedkaos/print-env@v1.0
+
+    - uses: wangyoucao577/go-release-action@v1.4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        binary_name: "${{ linkfixer-bot }}"

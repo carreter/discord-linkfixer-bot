@@ -1,4 +1,4 @@
-package linkfixerbot
+package fixer
 
 import (
 	"bytes"

@@ -7,7 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	linkfixerbot "github.com/carreter/discord-linkfixer-bot/pkg"
+	"github.com/carreter/discord-linkfixer-bot/pkg/fixer"
+	"github.com/carreter/discord-linkfixer-bot/pkg/linkfixerbot"
+
 	"github.com/charmbracelet/log"
 	"go.etcd.io/bbolt"
 )
@@ -29,7 +31,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	bot, err := linkfixerbot.NewLinkfixerBot(*authToken, linkfixerbot.NewBoltStore(db))
+	bot, err := linkfixerbot.NewLinkfixerBot(*authToken, fixer.NewBoltStore(db))
 	if err != nil {
 		log.Error("could not create bot", "err", err)
 	}

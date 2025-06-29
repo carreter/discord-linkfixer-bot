@@ -1,6 +1,8 @@
 # linkfixer: A simple bot to fix URLs in Discord messages
 [![.github/workflows/release.yaml](https://github.com/carreter/discord-linkfixer-bot/actions/workflows/release.yaml/badge.svg)](https://github.com/carreter/discord-linkfixer-bot/actions/workflows/release.yaml)
 
+<img src="assets/pfp.png" alt="bot logo" width="200"/>
+
 A Discord bot that automatically fixes URLs posted in your server by applying customizable transformations to links from specific domains.
 
 ## Features
@@ -26,6 +28,7 @@ Perfect for fixing common URL issues like:
 - Discord bot token
 
 ### Building from Source
+Release binaries are also available [here](https://github.com/carreter/discord-linkfixer-bot/releases).
 
 ```bash
 git clone https://github.com/carreter/discord-linkfixer-bot
@@ -82,16 +85,6 @@ List all registered fixers for the current server.
 ### `/delete-fixer`
 Remove a fixer for a specific domain.
 - `domain`: Domain of the fixer to delete
-
-## Setup Instructions
-
-1. Create a Discord application at https://discord.com/developers/applications
-2. Create a bot user and copy the token
-3. Invite the bot to your server with these permissions:
-   - Read Messages
-   - Send Messages
-   - Use Slash Commands
-4. Run the bot with your token
 
 ## Development
 

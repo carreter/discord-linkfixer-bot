@@ -23,26 +23,37 @@ Perfect for fixing common URL issues like:
 
 ## Installation
 
-### Prerequisites
+### Docker
+Run the latest Docker image using:
+```bash
+docker run carreter/discord-linkfixer-bot -token YOUR_DISCORD_BOT_TOKEN
+```
+
+### Pre-built Binaries
+Release binaries are also available [here](https://github.com/carreter/discord-linkfixer-bot/releases).
+
+### Building from Source
+
+#### Install prerequisites
 - Go 1.24.4 or later
 - Discord bot token
 
-### Building from Source
-Release binaries are also available [here](https://github.com/carreter/discord-linkfixer-bot/releases).
+#### Clone the repository
 
 ```bash
 git clone https://github.com/carreter/discord-linkfixer-bot
 cd discord-linkfixer-bot
-go build -o linkfixer-bot
 ```
 
-### Running the Bot
+#### Build and run the bot
 
 ```bash
+go build -o linkfixer-bot
 ./linkfixer-bot -token YOUR_DISCORD_BOT_TOKEN
 ```
 
-Optional flags:
+Flags:
+- `-token YOUR_DISCORD_BOT_TOKEN`: Your Discord bot token
 - `-db PATH`: Path to database file (default: `./fixers.db`)
 
 ## Discord Commands

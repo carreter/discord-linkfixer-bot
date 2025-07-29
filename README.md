@@ -97,6 +97,15 @@ List all registered fixers for the current server.
 Remove a fixer for a specific domain.
 - `domain`: Domain of the fixer to delete
 
+### `/register-csv-fixers`
+Register fixers from a CSV file attachment.
+
+Currently, rows can haven one of two formats:
+1. `prepend,<domain>,<prefix>`, or
+2. `replace,<domain>,<old>,<new>`
+
+These correspond to the `/prepend-fixer` and `/replace-fixer` commands, respectively.
+
 ## Development
 
 ### Project Structure

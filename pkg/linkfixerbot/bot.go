@@ -36,6 +36,7 @@ func NewLinkfixerBot(authToken string, store fixer.Store) (*LinkfixerBot, error)
 		discord: discord,
 		commands: map[string]commands.Command{
 			"replace-fixer":        commands.RegisterReplaceFixerCommand{Store: store},
+			"register-csv-fixers":  commands.RegisterCsvFixersCommand{Store: store},
 			"regexp-replace-fixer": commands.RegisterRegexpReplaceFixerCommand{Store: store},
 			"prepend-fixer":        commands.RegisterPrependFixerCommand{Store: store},
 			"list-fixers":          commands.ListFixersCommand{Store: store},

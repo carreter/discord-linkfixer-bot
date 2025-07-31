@@ -114,6 +114,7 @@ func (lb *LinkfixerBot) messageHandler(s *discordgo.Session, m *discordgo.Messag
 	}
 
 	if f == nil {
+		log.Debug("no fixer found for domain", "domain", domain)
 		return
 	}
 

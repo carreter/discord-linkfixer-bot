@@ -18,6 +18,8 @@ func main() {
 	authToken := flag.String("token", "", "Discord auth token")
 	boltStore := flag.String("db", "./fixers.db", "path to database")
 
+	log.SetLevel(log.DebugLevel)
+
 	flag.Parse()
 
 	if *authToken == "" {

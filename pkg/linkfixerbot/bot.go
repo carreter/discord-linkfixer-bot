@@ -3,8 +3,6 @@ package linkfixerbot
 import (
 	"context"
 	"fmt"
-	"regexp"
-	"strings"
 
 	"github.com/carreter/discord-linkfixer-bot/pkg/fixer"
 	"github.com/carreter/discord-linkfixer-bot/pkg/linkfixerbot/commands"
@@ -12,9 +10,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/charmbracelet/log"
 )
-
-var URLRegex = regexp.MustCompile(`https?:\/\/(?:www\.)?[-a-zA-Z0-9\._]+\/?[-a-zA-Z0-9()@:%_\+.~#?&\/=]+`)
-var DomainRegex = regexp.MustCompile(`https?:\/\/(?:www\.)?([-a-zA-Z0-9\._]+)\/?`)
 
 type LinkfixerBot struct {
 	discord            *discordgo.Session
@@ -98,30 +93,27 @@ func (lb *LinkfixerBot) messageHandler(s *discordgo.Session, m *discordgo.Messag
 		return
 	}
 
-	mUrl := URLRegex.FindString(m.Content)
-	if mUrl == "" { // Skip message without URLs.
-		return
-	}
+	mUrls := fixer.ExtractURLs(m.Content)
 
-	//  Chop off query params
-	mUrl, _, _ = strings.Cut(mUrl, "?")
+	for _, mUrl := range mUrls {
+		domain := fixer.ExtractDomain(mUrl)
+		f, err := lb.store.Get(m.GuildID, domain)
+		if err != nil {
+			log.Error("could not get domain from store", "domain", domain, "err", err)
+			return
+		}
 
-	domain := DomainRegex.FindStringSubmatch(mUrl)[1]
-	f, err := lb.store.Get(m.GuildID, domain)
-	if err != nil {
-		log.Error("could not get domain from store", "domain", domain, "err", err)
-		return
-	}
+		if f == nil {
+			log.Debug("no fixer found for domain", "domain", domain)
+			return
+		}
 
-	if f == nil {
-		log.Debug("no fixer found for domain", "domain", domain)
-		return
-	}
-
-	_, err = s.ChannelMessageSendReply(m.ChannelID, f.Fix(mUrl), m.Reference())
-	if err != nil {
-		log.Error("sending fixed link failed", "channelID", m.ChannelID, "messageID", m.ID)
-		return
+		mUrl = fixer.RemoveQueryParams(mUrl)
+		_, err = s.ChannelMessageSendReply(m.ChannelID, f.Fix(mUrl), m.Reference())
+		if err != nil {
+			log.Error("sending fixed link failed", "channelID", m.ChannelID, "messageID", m.ID)
+			return
+		}
 	}
 }
 

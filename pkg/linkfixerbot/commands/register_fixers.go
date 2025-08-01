@@ -40,7 +40,7 @@ func (c RegisterReplaceFixerCommand) ApplicationCommandTemplate() *discordgo.App
 }
 
 func (c RegisterReplaceFixerCommand) Run(i *discordgo.InteractionCreate, opts map[string]any) (string, error) {
-	domain := opts["domain"].(string)
+	domain := fixer.ExtractDomain(opts["domain"].(string))
 	f := fixer.ReplaceFixer{
 		Old: opts["old"].(string),
 		New: opts["new"].(string),
@@ -86,7 +86,7 @@ func (c RegisterRegexpReplaceFixerCommand) ApplicationCommandTemplate() *discord
 }
 
 func (c RegisterRegexpReplaceFixerCommand) Run(i *discordgo.InteractionCreate, opts map[string]any) (string, error) {
-	domain := opts["domain"].(string)
+	domain := fixer.ExtractDomain(opts["domain"].(string))
 	f := fixer.RegexpReplaceFixer{
 		Pattern:     opts["pattern"].(string),
 		Replacement: opts["replacement"].(string),
@@ -131,7 +131,7 @@ func (c RegisterPrependFixerCommand) ApplicationCommandTemplate() *discordgo.App
 }
 
 func (c RegisterPrependFixerCommand) Run(i *discordgo.InteractionCreate, opts map[string]any) (string, error) {
-	domain := opts["domain"].(string)
+	domain := fixer.ExtractDomain(opts["domain"].(string))
 	f := fixer.PrependFixer{
 		Prefix: opts["prefix"].(string),
 	}

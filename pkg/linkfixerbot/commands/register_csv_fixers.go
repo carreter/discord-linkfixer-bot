@@ -79,7 +79,10 @@ func parseFixers(csv string) (map[string]fixer.Fixer, error) {
 			return nil, fmt.Errorf("unknown fixer type: %s", cols[0])
 		}
 
-		domain := strings.TrimSpace(cols[1])
+		domain := fixer.ExtractDomain(strings.TrimSpace(cols[1]))
+		if domain == "" {
+			return nil, fmt.Errorf("invalid domain: %s", cols[1])
+		}
 		fixers[domain] = newFixer
 	}
 	return fixers, nil
